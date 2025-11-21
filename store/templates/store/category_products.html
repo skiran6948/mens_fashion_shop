@@ -1,0 +1,33 @@
+{% extends 'store/base.html' %}
+
+{% block title %}{{ category.name }} - Men's Fashion Store{% endblock %}
+
+{% block content %}
+<h2 style="text-align:center;">{{ category.name }}</h2>
+
+{% if products %}
+  <div style="
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+      padding: 20px;
+    ">
+    {% for product in products %}
+        <div style="
+          background:white;
+          padding:15px;
+          text-align:center;
+          border-radius:8px;
+          box-shadow:0 2px 8px rgba(0,0,0,0.1);
+        ">
+            <img src="{{ product.image.url }}" width="180" height="200" style="border-radius:6px;">
+            <h4>{{ product.name }}</h4>
+            <p>₹{{ product.price }}</p>
+            <a href="{% url 'product_detail' product.slug %}">View Details</a>
+        </div>
+    {% endfor %}
+  </div>
+{% else %}
+    <p style="text-align:center;">No products in this category.</p>
+{% endif %}
+{% endblock %}

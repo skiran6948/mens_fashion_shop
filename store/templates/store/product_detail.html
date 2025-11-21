@@ -1,0 +1,65 @@
+{% extends 'store/base.html' %}
+
+{% block title %}{{ product.name }} - Men's Fashion Store{% endblock %}
+
+{% block content %}
+  <div style="max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+    
+    <div style="display: flex; flex-wrap: wrap; gap: 30px; align-items: flex-start; justify-content: center;">
+      
+      <!-- Product Image -->
+      <div>
+        <img src="{{ product.image.url }}" width="300" height="350" style="border-radius: 8px;" alt="{{ product.name }}">
+      </div>
+
+      <!-- Product Info -->
+      <div style="max-width: 400px;">
+        <h2 style="margin-bottom: 10px;">{{ product.name }}</h2>
+        <p style="color: #333;">{{ product.description }}</p>
+        <p style="font-size: 18px; font-weight: bold; margin-top: 10px;">₹{{ product.price }}</p>
+        {% if product.stock > 0 %}
+        <p style="color: green; margin-bottom: 20px;">In Stock ({{ product.stock }})</p>
+        {% else %}
+        <p style="color: red; margin-bottom: 20px;">Out of Stock</p>
+        {% endif %}
+
+
+        <form action="{% url 'add_to_cart' product.id %}" method="post">
+          {% csrf_token %}
+          {% if product.stock > 0 %}
+            <button type="submit" 
+              style="
+                background-color: #111; 
+                color: white; 
+                padding: 10px 20px; 
+                border: none; 
+                border-radius: 5px; 
+                cursor: pointer; 
+                font-size: 16px;
+              "
+              onmouseover="this.style.backgroundColor='#f0c040'"
+              onmouseout="this.style.backgroundColor='#111'">
+              Add to Cart 🛒
+            </button>
+          {% else %}
+            <button type="button" disabled 
+              style="background-color: #999; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; cursor: not-allowed;">
+              Out of Stock
+            </button>
+          {% endif %}
+        </form>
+
+        <br>
+        <a href="/shop/" 
+           style="color: #111; text-decoration: none; font-weight: 500;"
+           onmouseover="this.style.color='#f0c040'"
+           onmouseout="this.style.color='#111'">
+           ← Back to Shop
+        </a>
+      </div>
+
+    </div>
+  </div>
+{% endblock %}
+
+

@@ -1,0 +1,97 @@
+{% extends "admin/base_site.html" %}
+{% block title %}Analytics Dashboard{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 20px;">📊 Store Analytics Dashboard</h1>
+
+<!-- 🔹 Date Range Filters -->
+<div style="margin-bottom: 20px;">
+  <strong>Filter by:</strong>
+  <a href="?range=all">All</a> |
+  <a href="?range=today">Today</a> |
+  <a href="?range=week">This Week</a> |
+  <a href="?range=month">This Month</a>
+</div>
+
+<!-- 🔹 Summary Cards -->
+<div style="display:flex; gap:20px; flex-wrap:wrap;">
+  <div style="background:#111; color:white; padding:20px; border-radius:10px; flex:1;">
+    <h2>{{ total_orders }}</h2>
+    <p>Total Orders</p>
+  </div>
+
+  <div style="background:#00695c; color:white; padding:20px; border-radius:10px; flex:1;">
+    <h2>₹{{ total_revenue }}</h2>
+    <p>Total Revenue</p>
+  </div>
+
+  <div style="background:#0277bd; color:white; padding:20px; border-radius:10px; flex:1;">
+    <h2>{{ total_customers }}</h2>
+    <p>Unique Customers</p>
+  </div>
+</div>
+
+<!-- 🔹 Orders by Status -->
+<h3 style="margin-top:30px;">📦 Orders by Status</h3>
+<table style="width:100%; border-collapse:collapse; margin-top:10px;">
+  <tr style="background:#f0f0f0;">
+    <th style="padding:10px; text-align:left;">Status</th>
+    <th style="padding:10px; text-align:left;">Count</th>
+  </tr>
+  {% for s in status_counts %}
+  <tr>
+    <td style="padding:10px;">{{ s.status }}</td>
+    <td style="padding:10px;">{{ s.count }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<!-- 🔹 Top Selling Products -->
+<h3 style="margin-top:30px;">🏆 Top 5 Best-Selling Products</h3>
+<table style="width:100%; border-collapse:collapse; margin-top:10px;">
+  <tr style="background:#f0f0f0;">
+    <th style="padding:10px; text-align:left;">Product</th>
+    <th style="padding:10px; text-align:left;">Total Sold</th>
+  </tr>
+  {% for p in top_products %}
+  <tr>
+    <td style="padding:10px;">{{ p.product__name }}</td>
+    <td style="padding:10px;">{{ p.total_sold }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<!-- 🔹 Revenue Trend Chart -->
+<h3 style="margin-top:30px;">📈 Revenue Trend</h3>
+<canvas id="revenueChart" width="600" height="250"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const labels = JSON.parse('{{ labels|escapejs }}');
+  const totals = JSON.parse('{{ totals|escapejs }}');
+
+  const data = {
+    labels: labels,
+    datasets: [{
+      label: 'Revenue (₹)',
+      data: totals,
+      borderColor: 'rgb(33, 150, 243)',
+      fill: false,
+      tension: 0.1
+    }]
+  };
+
+  new Chart(document.getElementById('revenueChart'), {
+    type: 'line',
+    data: data,
+    options: {
+      scales: {
+        x: { title: { display: true, text: 'Date' } },
+        y: { title: { display: true, text: 'Revenue (₹)' }, beginAtZero: true }
+      }
+    }
+  });
+</script>
+
+</script>
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Home - Men's Fashion Store{% endblock %}
+
+{% block content %}
+  <div style="text-align: center; margin-bottom: 25px;">
+    <h1>Welcome to Men's Fashion Store 👕</h1>
+    <h3 style="color: #555;">Discover Our Latest Collections</h3>
+  </div>
+
+  <!-- 🔍 UPDATED SEARCH BAR with CATEGORY -->
+  <form method="get" action="{% url 'search' %}" style="text-align: center; margin-bottom: 30px;">
+
+    <input type="text" name="q" placeholder="Search..." 
+            style="padding: 10px; width: 250px; border:1px solid #ccc; border-radius:5px;">
+
+    <select name="category" style="padding:10px; border-radius:5px;">
+      <option value="">All Categories</option>
+      {% for c in categories %}
+        <option value="{{ c.id }}">{{ c.name }}</option>
+      {% endfor %}
+    </select>
+
+    <button type="submit" 
+            style="padding: 10px 15px; background:#111; color:white; border:none; border-radius:5px;">
+      Search
+    </button>
+  </form>
+  <!-- 🔍 END SEARCH BAR -->
+
+  <div id="suggestions" 
+      style="background:white; width:300px; margin:0 auto; border-radius:5px; 
+              display:none; position:absolute; left:50%; transform:translateX(-50%); 
+              z-index:10; box-shadow:0 2px 6px rgba(0,0,0,0.2);">
+  </div>
+
+<script>
+function liveSearch(query) {
+    if (query.length === 0) {
+        document.getElementById('suggestions').style.display = 'none';
+        return;
+    }
+    
+    fetch(`/search_suggestions/?q=${query}`)
+    .then(response => response.json())
+    .then(data => {
+        let box = document.getElementById('suggestions');
+        box.innerHTML = '';
+        
+        data.forEach(item => {
+            box.innerHTML += `<div style="padding:10px; border-bottom:1px solid #eee;">
+                <a href="/product/${item.slug}/">${item.name}</a>
+            </div>`;
+        });
+
+        box.style.display = 'block';
+    });
+}
+
+document.querySelector('input[name="q"]').addEventListener('keyup', (e) => {
+    liveSearch(e.target.value);
+});
+</script>
+
+<!-- 🟦 SHOP BY CATEGORY SECTION (Added Here) -->
+<!-- 🟦 SHOP BY CATEGORY (Image Cards) -->
+<h2 style="text-align:center; margin-top:40px;">Shop by Category</h2>
+
+<div style="
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 25px;
+    padding: 20px;
+">
+    {% for c in categories %}
+        <a href="{% url 'category_products' c.slug %}" 
+            style="text-decoration:none; color:black;">
+            
+            <div style="
+                background:white;
+                border-radius:10px;
+                overflow:hidden;
+                box-shadow:0 2px 8px rgba(0,0,0,0.1);
+                transition: transform .2s;
+                text-align:center;
+            " onmouseover="this.style.transform='scale(1.05)'"
+              onmouseout="this.style.transform='scale(1)'">
+
+                {% if c.image %}
+                    <img src="{{ c.image.url }}" 
+                        style="width:100%; height:150px; object-fit:cover;">
+                {% else %}
+                    <div style="width:100%; height:150px; background:#eee;"></div>
+                {% endif %}
+
+                <h3 style="padding:10px;">{{ c.name }}</h3>
+            </div>
+
+        </a>
+    {% endfor %}
+</div>
+<!-- 🟦 END CATEGORY IMAGE CARDS -->
+
+<!-- 🟦 END CATEGORY SECTION -->
+
+{% if products %}
+    <div style="
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+      padding: 0 20px;
+    ">
+      {% for product in products %}
+        <div style="
+          background-color: white;
+          border-radius: 8px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          padding: 15px;
+          text-align: center;
+          transition: transform 0.2s;
+        " onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+
+          <img src="{{ product.image.url }}" width="180" height="200" style="border-radius: 6px;" alt="{{ product.name }}"><br>
+          <h4 style="margin: 10px 0;">{{ product.name }}</h4>
+          <p style="color: #222; font-weight: bold;">₹{{ product.price }}</p>
+
+          <a href="{% url 'product_detail' product.slug %}" 
+              style="
+                background-color: #111;
+                color: white;
+                text-decoration: none;
+                padding: 8px 15px;
+                border-radius: 5px;
+                display: inline-block;
+              "
+              onmouseover="this.style.backgroundColor='#f0c040'"
+              onmouseout="this.style.backgroundColor='#111'">
+              View Details
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+{% else %}
+    <p style="text-align: center;">No products yet. Please add some in the admin panel.</p>
+{% endif %}
+{% endblock %}

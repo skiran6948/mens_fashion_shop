@@ -1,0 +1,20 @@
+{% extends 'store/base.html' %}
+{% block title %}Login{% endblock %}
+{% block content %}
+  <div style="max-width:400px; margin:0 auto; background:white; padding:30px; border-radius:10px;">
+    <h2 style="text-align:center;">Login</h2>
+    <form method="post">
+      {% csrf_token %}
+      <label>Username</label><br>
+      <input type="text" name="username" required style="width:100%; padding:8px; margin-bottom:10px;"><br>
+
+      <label>Password</label><br>
+      <input type="password" name="password" required style="width:100%; padding:8px; margin-bottom:10px;"><br>
+
+      <button type="submit" style="background-color:#111; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer;">
+        Login
+      </button>
+    </form>
+    <p style="margin-top:10px;">Don’t have an account? <a href="/accounts/register/">Register</a></p>
+  </div>
+{% endblock %}
